@@ -5,8 +5,8 @@
 "use strict";
 var strategy = {
     name : "Advizer",
-    desc : "Advizer gives general trading advice considering present market conditions and your existing positions.\nIT DOES NOT TRADE FOR YOU!",
-    version : "1.0.0",
+    desc : "Advizer gives general trading advice considering present market conditions and your existing positions.\nIT WILL TRADE FOR YOU NOW!",
+    version : "2.0.0",
     depends : ["console","globals","pool","hashnest"],
     provides : []
 };
@@ -137,29 +137,44 @@ function onTick(){
     miners.forEach(function(miner){
         console.log(miner.name+" : "+miner.yield);
     });
-    console.log("***********Owned Miners**************");
+    //JUST ADDED
+    console.log("***********Miners Owned**************");
+    var total_yield=0.0;
     miners.forEach(function(miner,idx){
         if(Number(miner.holdings.total) > 0){
             var nav = Number(miner.nav).toFixed(8);
             var holdings = Number(miner.holdings.total);
             var daily_earnings = Number(miner.net_btc_per_ghs_daily * holdings).toFixed(8);
-            console.log(miner.name+": "+holdings+" valued at "+nav+" BTC which is returing "+daily_earnings+" BTC daily.");
-            if(idx >= 2){
-                miner.sell = true;
-            }else{
-                miner.buy = true;
-            }
+            console.log(miner.name+": "+holdings+" valued at "+nav+" BTC, earns "+daily_earnings+" BTC daily.");
+            total_yield +=Number(miner.yield);
+            miner.sell = true;
+        }
+        if(miner.yield > 0){
+            miner.buy = true;
         }
     });
+    var projected_nav = Number(Number(nav)+Number(total_yield)).toFixed(8);
+    var projected_nav_usd = Number(projected_nav * globals.btc_usd_rate).toFixed(2);
+    console.log("************Mining Yield**********************");
+    console.log("Daily Mining Earns: "+Number(total_yield).toFixed(8)+" BTC");
+    console.log("*****************NET ASSET VALUE*******************");
+    console.log("Current: "+nav+" BTC worth $"+nav_usd);
+    console.log("24hr Projected: "+projected_nav+" BTC worth $"+projected_nav_usd);   
+    
     console.log("************"+strategy.name+" Advice*************");
     miners.forEach(function(miner){
         if(miner.sell){
             var sellprice = Number(miner.best_bid).toFixed(8);
             var selltotal = (sellprice * globals.btc_usd_rate).toFixed(8);
+            var qty = miner.holdings.total;
             console.log("Sell "+miner.holdings.total+" of your "+miner.name+" "+" for "+sellprice+" giving you "+selltotal+"BTC use it to buy more "+miners[0].name);
+            console.log(miner.name+" : "+HashNestAPI.createOrder(miner.id, qty ,sellprice,"sale"));
         }else{
             if(miner.buy){
-                console.log("Buy "+miner.name+" at "+miner.best_ask+" the yield is "+miner.yield+" BTC daily for each BTC invested");
+                var qty = Math.round(Number(balances.BTC.amount) / Number(miner.best_ask));
+                var buyprice = Number(miner.best_ask).toFixed(8);
+                console.log("Buy "+miner.name+" at "+buyprice+" the yield is "+miner.yield+" BTC daily for each BTC invested");
+                console.log(miner.name+" : "+HashNestAPI.createOrder(miner.id,qty,buyprice,"purchase"));
             }
         }
     });
