@@ -8,9 +8,10 @@ You can select a strategy by adding it to the command line of the engine.
 java -jar hashbuddy.jar --strategy=strategies/advizer.js
 
 Once you've test your chosen strategy it's helpful to create a shell script or batch file to start it for example
+An example of how to create an outrestar script
 
 nano hashbuddy.sh
-#begin auto-restart script
+
 java -Djsse.enableSNIExtension=false -jar hashbuddy.jar \
 --TICKRATE=300 \
 --HASHNESTAPIUSERNAME=yourname \
@@ -25,7 +26,9 @@ java -Djsse.enableSNIExtension=false -jar hashbuddy.jar \
 echo "Something happened, the strategy crash, to exit you must press ctrl+c really fast!
 sleep 10
 hashbuddy.sh  
-#end of script
+
+EOF
+
 Save it 
 ctrl+s (with nano)
 
@@ -126,7 +129,7 @@ If you feel that all this effort has been worth something to you, please conside
 While we don't provide individualized support at this time, that is coming in the future.
 
 Bob & Ash have setup a coinsplit tip jar at.
-# 1LpvaYjpphVnbAYMhV5gEbBrVMs2Dxbnk5
+1LpvaYjpphVnbAYMhV5gEbBrVMs2Dxbnk5
 
 This tip jar is split among all regular contributors and more people will be added as the community grows.
 
