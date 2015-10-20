@@ -180,7 +180,7 @@ function onTick(){
                 var difference = Number(base_price - floor_price).toFixed(8);
                 var distance = (difference * globals.split_factor).toFixed(8);
                 var price = base_price;
-                var amount = Math.round((Number(balances.BTC.amount) / globals.split_factor) / price);
+                var amount = Math.round((Number(balances.BTC.amount)  / price) / globals.split_factor);
                 
                 //console.log("factor: "+factor);
                 var counter = 1;
@@ -189,7 +189,7 @@ function onTick(){
                     price = Number(price).toFixed(8);
                     if(amount > 0){ 
                         console.log("Gettin ya "+amount+" GHS of "+miner.name+" for "+price+" is a good deal for step "+counter);
-                        //result = HashNestAPI.createOrder(miner.id, amount, price, "purchase");
+                        result = HashNestAPI.createOrder(miner.id, amount, price, "purchase");
                     }else{
                         console.log("Looks like you don't have any money right now.  I'll just go ahead and cancel some of these orders that haven't filled yet.");
                         result = HashNestAPI.cancelAllOrders(miner.id, "purchase");
@@ -215,7 +215,7 @@ function onTick(){
                     if(Number(amount) > 0){
                         console.log("I'm in ur internet sellin all ur "+miner.name+" , watch this!");
                         console.log("Selling "+amount+" GHS for "+price+" is good enough for step "+counter);
-                        //result = HashNestAPI.createOrder(miner.id, amount, price, "sale");
+                        result = HashNestAPI.createOrder(miner.id, amount, price, "sale");
                     }else{
                         console.log("Well the bot thought we had some for sale, turns out the bot was wrong.");
                         console.log("Oh wait I found some!");

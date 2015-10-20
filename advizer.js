@@ -164,17 +164,28 @@ function onTick(){
     console.log("************"+strategy.name+" Advice*************");
     miners.forEach(function(miner){
         if(miner.sell){
-            var sellprice = Number(miner.mid_point+miner.net_btc_per_ghs_daily).toFixed(8);
+            //console.log(Number(miner.mid_price));
+            //console.log(Number(miner.net_btc_per_ghs_daily));
+            var sellprice = Number(Number(miner.mid_price)+Number(miner.net_btc_per_ghs_daily)).toFixed(8);
             var selltotal = (sellprice * globals.btc_usd_rate).toFixed(8);
-            var qty = miner.holdings.total;
-            console.log("Sell "+miner.holdings.total+" of your "+miner.name+" "+" for "+sellprice+" giving you "+selltotal+"BTC use it to buy more "+miners[0].name);
-            console.log(miner.name+" : "+HashNestAPI.createOrder(miner.id, qty ,sellprice,"sale"));
+            var qty = miner.holdings.amount;
+            if(qty > 0){
+                console.log("Sell "+miner.holdings.total+" of your "+miner.name+" "+" for "+sellprice+" giving you "+selltotal+"BTC use it to buy more "+miners[0].name);
+                console.log(miner.name+" : "+HashNestAPI.createOrder(miner.id, qty ,sellprice,"sale"));
+            }else{
+                hashnest.cancelAllOrders(miner);
+            }
         }else{
             if(miner.buy){
                 var qty = Math.round(Number(balances.BTC.amount) / Number(miner.best_ask));
-                var buyprice = Number(miner.best_ask).toFixed(8);
-                console.log("Buy "+miner.name+" at "+buyprice+" the yield is "+miner.yield+" BTC daily for each BTC invested");
-                console.log(miner.name+" : "+HashNestAPI.createOrder(miner.id,qty,buyprice,"purchase"));
+                if(qty > 0){
+                    var buyprice = Number(miner.best_bid+1).toFixed(8);//We use mid_point since that is where yield is calculated, NAV is based on best_bid
+                    console.log("Buy "+miner.name+" at "+buyprice+" the yield is "+miner.yield+" BTC daily for each BTC invested");
+                    console.log(miner.name+" : "+HashNestAPI.createOrder(miner.id,qty,buyprice,"purchase"));
+                    balances.BTC.amount -= (qty * buyprice);
+                }else{
+                    hashnest.cancelAllOrders(miner);
+                }
             }
         }
     });
