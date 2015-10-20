@@ -164,7 +164,7 @@ function onTick(){
     console.log("************"+strategy.name+" Advice*************");
     miners.forEach(function(miner){
         if(miner.sell){
-            var sellprice = Number(miner.best_bid).toFixed(8);
+            var sellprice = Number(miner.mid_point+miner.net_btc_per_ghs_daily).toFixed(8);
             var selltotal = (sellprice * globals.btc_usd_rate).toFixed(8);
             var qty = miner.holdings.total;
             console.log("Sell "+miner.holdings.total+" of your "+miner.name+" "+" for "+sellprice+" giving you "+selltotal+"BTC use it to buy more "+miners[0].name);

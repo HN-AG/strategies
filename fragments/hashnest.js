@@ -95,5 +95,14 @@ var hashnest = {
        x.yield = x.net_earnings_per_btc_daily; //Yes we're just renaming it because it's more common outside this function
 
        return x;
+   },
+   
+   cancelAllOrders : function(miner){
+       var orders = miner.orders.active;
+       console.log("cancelling: "+JSON.stringify(orders));
+       orders.forEach(function(order){
+            console.log("Cancelling order: "+order.id);
+            HashNestAPI.cancelOrder(order.id);
+       });
    }
 }
